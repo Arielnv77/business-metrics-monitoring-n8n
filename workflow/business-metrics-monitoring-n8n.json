@@ -1,0 +1,287 @@
+{
+  "name": "AI-powered Data Intake & Insight Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "e31a9b5b-d586-4a56-be62-aef07c527ac1",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -640,
+        -496
+      ],
+      "id": "d859d3be-9aec-4db7-a186-77b35f494167",
+      "name": "Webhook",
+      "webhookId": "e31a9b5b-d586-4a56-be62-aef07c527ac1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "17J19WdJpty8g2684kqTuBbxhqx08tQdfV12MsSdYDUU",
+          "mode": "list",
+          "cachedResultName": "Hoja de cálculo sin título",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17J19WdJpty8g2684kqTuBbxhqx08tQdfV12MsSdYDUU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Hoja 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/17J19WdJpty8g2684kqTuBbxhqx08tQdfV12MsSdYDUU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "company": "={{$json.company}}",
+            "period": "={{$json.period}}",
+            "metric": "={{$json.metric}}",
+            "value": "={{ $json.value }}",
+            "threshold": "={{$json.threshold }}",
+            "alert_message": "={{ $json.alert_message }}",
+            "timestamp": "={{ $json.timestamp }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "period",
+              "displayName": "period",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "metric",
+              "displayName": "metric",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "value",
+              "displayName": "value",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "threshold",
+              "displayName": "threshold",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "alert_message",
+              "displayName": "alert_message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        528,
+        -464
+      ],
+      "id": "4271c543-0c10-4d34-8188-f2cda891f246",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "PA3RRh4mussB39EA",
+          "name": "Google Sheets account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = $json.body;\n\nconst thresholds = {\n  monthly_sales: 8000,\n  new_leads: 50,\n  churn_rate: 0.05,\n};\n\nconst metricsArray = Object.entries(input.metrics).map(([key, value]) => {\n  return {\n    name: key,\n    value: Number(value),\n    threshold: thresholds[key] ?? null,\n    status: Number(value) >= (thresholds[key] ?? 0) ? \"OK\" : \"ALERT\",\n  };\n});\n\nreturn {\n  company: input.company,\n  period: input.period,\n  metrics: metricsArray,\n  timestamp: new Date().toISOString(),\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -400,
+        -192
+      ],
+      "id": "7e372534-909b-43a1-a643-6b64ad29ddcb",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "metrics",
+        "include": "allOtherFields",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -176,
+        -192
+      ],
+      "id": "eccd82d0-4f76-46c1-b96d-4033b0abd101",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e605d57e-98a8-471a-98e9-ef6ccb7af1ed",
+              "leftValue": "={{$json.metrics.status}}",
+              "rightValue": "ALERT",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        16,
+        -224
+      ],
+      "id": "9e0043ce-2d98-4756-8f64-50a52c1e9fd5",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  company: $json.company,\n  period: $json.period,\n  metric: $json.metrics.name,\n  value: $json.metrics.value,\n  threshold: $json.metrics.threshold,\n  alert_message: `ALERT 🚨: ${$json.metrics.name} (${ $json.metrics.value } < ${ $json.metrics.threshold })`,\n  timestamp: $json.timestamp,\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        288,
+        -320
+      ],
+      "id": "ce5dfcef-deee-4de0-88ff-85f12fdac98d",
+      "name": "Build Alert Summary"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Build Alert Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Alert Summary": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "dd812175-bbf6-4a36-94f4-c7d31d08bcbb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "ab2595439f625e78ee9b601a1a8c3fa06f8e39c210ea90bc5f2e4e146badd21f"
+  },
+  "id": "Mqc5hwcmmzoiBGec",
+  "tags": []
+}
